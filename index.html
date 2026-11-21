@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Segunda Vida | Simulador del Caso 2</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#18263d;--line:#2a3a54;--txt:#eef4ff;--muted:#a8b6ca;--cyan:#62d6d0;--blue:#83aaff;--good:#7ee0ad;--warn:#ffd27d;--bad:#ff9292}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#0b1220,#111e32 65%,#102b37);color:var(--txt);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:32px max(22px,calc((100vw - 1180px)/2));border-bottom:1px solid var(--line);background:#0b1424cc}
+.eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700}h1{font-size:clamp(30px,5vw,48px);line-height:1.05;margin:8px 0}h2{font-size:21px;margin:0 0 14px}h3{font-size:16px;margin:0 0 8px}.sub{color:var(--muted);max-width:780px}
+main{max-width:1180px;margin:auto;padding:24px 20px 60px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{background:linear-gradient(160deg,var(--panel),#101a2b);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 12px 28px #0002}.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-4{grid-column:span 4}.span-6{grid-column:span 6}
+label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}input,select{width:100%;background:#0b1526;color:var(--txt);border:1px solid #40516c;border-radius:9px;padding:11px 12px;font:inherit}input:focus,select:focus{outline:2px solid var(--cyan);border-color:transparent}.fields{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.hint{font-size:12px;color:var(--muted);margin-top:5px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}button{border:0;border-radius:10px;padding:10px 15px;font-weight:700;cursor:pointer;background:var(--cyan);color:#09202a}button.secondary{background:#263750;color:var(--txt);border:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}.kpi small{display:block;color:var(--muted)}.kpi strong{font-size:25px;display:block;margin-top:3px}.status{display:inline-block;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:700}.ok{background:#143c31;color:var(--good)}.no{background:#47252b;color:var(--bad)}.maybe{background:#493a1d;color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{color:#b8c9df;font-weight:650;background:#1a2940}tr:last-child td{border-bottom:0}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}
+.note{border-left:3px solid var(--cyan);padding:10px 13px;background:#12283a;border-radius:0 9px 9px 0;color:#d7e7f4}.warning{border-left-color:var(--warn);background:#30291c}.muted{color:var(--muted)}.formula{font-family:ui-monospace,Consolas,monospace;color:#b9d7ff;font-size:13px;overflow-wrap:anywhere}.bar{height:9px;background:#27364c;border-radius:20px;overflow:hidden;margin:7px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue))}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pill{display:inline-block;background:#20334b;border:1px solid #38516e;padding:3px 8px;border-radius:7px;font-size:12px;color:#d4e4fa}.footer{margin-top:22px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:850px){.span-8,.span-4,.span-6{grid-column:span 12}.fields{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.fields,.kpis,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">Estudio y Diseño del Trabajo · Caso 2</div><h1>Segunda Vida</h1><p class="sub">Simulador de capacidad, calidad y coste para reacondicionar mandos. Trabaja con datos sintéticos del caso y permite comparar la referencia con los rediseños A y B.</p></header>
+<main>
+<div class="grid">
+<section class="card span-12">
+<h2>01 · Parámetros del escenario</h2>
+<div class="fields">
+<div><label for="demand">Demanda de mandos buenos</label><input id="demand" type="number" min="1" max="300" step="1" value="196"><div class="hint">unidades/turno</div></div>
+<div><label for="minutes">Tiempo neto disponible</label><input id="minutes" type="number" min="0.01" max="480" step="1" value="420"><div class="hint">minutos/turno</div></div>
+<div><label for="route">Proporción ruta M (r)</label><input id="route" type="number" min="0" max="1" step="0.01" value="0.30"><div class="hint">de 0 a 1; ruta L = 1 − r</div></div>
+<div><label for="yieldMin">Rendimiento mínimo</label><input id="yieldMin" type="number" min="0" max="1" step="0.001" value="0.98"><div class="hint">de 0 a 1</div></div>
+<div><label for="focus">Alternativa destacada</label><select id="focus"><option value="ref">Referencia</option><option value="A">A · Organizador</option><option value="B">B · Cuarta persona</option></select><div class="hint">solo resalta una fila</div></div>
+</div>
+<div class="actions"><button id="calculate">Actualizar análisis</button><button class="secondary" id="reset">Restablecer escenario base</button></div>
+<div id="error" role="alert" aria-live="polite" style="color:var(--bad);margin-top:10px"></div>
+</section>
+<section class="card span-12">
+<h2>02 · Resultado de la alternativa destacada</h2><div id="headline" class="kpis"></div><div id="focusNote" class="note" style="margin-top:14px"></div>
+</section>
+<section class="card span-12">
+<h2>03 · Comparación de las tres alternativas obligatorias</h2>
+<p class="muted">La capacidad se calcula sobre entradas completas. La salida buena es una esperanza matemática, no una garantía de unidades enteras.</p>
+<div class="table-wrap"><table><thead><tr><th>Alternativa</th><th>Carga máxima</th><th>Capacidad de entradas</th><th>Buenos esperados a capacidad</th><th>Entradas requeridas N</th><th>Factibilidad</th><th>Coste incremental/turno</th><th>Productividad del plan</th></tr></thead><tbody id="comparison"></tbody></table></div>
+</section>
+<section class="card span-8">
+<h2>04 · Árbol de cantidades esperadas</h2><div id="tree"></div>
+</section>
+<section class="card span-4">
+<h2>05 · Cargas por puesto</h2><div id="loads"></div>
+</section>
+<section class="card span-6">
+<h2>06 · Muestreo del trabajo</h2>
+<div class="kpis" id="samplingKpis"></div>
+<p class="formula">n = z² p(1 − p) / e²</p><p id="sampleN" class="note"></p>
+<p class="muted">300 observaciones aleatorias: 210 de primera pasada, 36 de retrabajo, 39 de espera y 15 de traslado.</p>
+</section>
+<section class="card span-6">
+<h2>07 · Revisión ergonómica del puesto</h2>
+<p>Alcances cómodos sintéticos: <b>32, 37 y 42 cm</b>. Ubicaciones actuales de contenedores: <b>28, 35 y 48 cm</b> desde el borde de trabajo.</p>
+<div class="table-wrap"><table><thead><tr><th>Perfil</th><th>Alcance</th><th>Ubicación actual</th><th>Lectura</th></tr></thead><tbody>
+<tr><td>Menor alcance</td><td>32 cm</td><td>28 cm</td><td><span class="status ok">Dentro del alcance</span></td></tr>
+<tr><td>Intermedio</td><td>37 cm</td><td>35 cm</td><td><span class="status ok">Dentro del alcance</span></td></tr>
+<tr><td>Mayor alcance</td><td>42 cm</td><td>48 cm</td><td><span class="status no">Fuera del alcance cómodo</span></td></tr>
+</tbody></table></div>
+<div class="note" style="margin-top:12px">Rediseño propuesto: colocar los contenedores frecuentes dentro de una franja de 0–32 cm desde el borde, al alcance del perfil menor, y mantener zonas físicas separadas y señalizadas para entrada, aprobados y descarte. Verificar el croquis con las dimensiones reales de la maqueta.</div>
+<p class="hint">No se atribuye reducción de tiempo ni se certifica cumplimiento normativo. El caso no aporta datos suficientes para un cálculo biomecánico.</p>
+</section>
+<section class="card span-12">
+<h2>08 · Fórmulas, supuestos y límites</h2>
+<div class="two">
+<div><h3>Tiempos estándar manuales</h3><p class="formula">TE = media observada × valoración × 1,15</p><p>A = 34,50 s · B = 96,60 s · C = 131,10 s · D = 34,50 s · E = 46,00 s.</p><h3>Cargas por entrada</h3><p class="formula">P1 = A + B (ref./A); P1 = B (B)</p><p class="formula">P2 = (r + f) × C + (1 − 0,2f) × E</p><p class="formula">P3 = (1 + f) × (D + 60)</p><p class="formula">P4 = A + (1 − 0,2f) × E (solo B)</p></div>
+<div><h3>Capacidad y factibilidad</h3><p class="formula">Capacidad entradas = piso(minutos × 60 / carga máxima)</p><p class="formula">Rendimiento = 1 − 0,2f</p><p class="formula">N requerido = techo(demanda buena / rendimiento)</p><p class="formula">Coste/turno = inversión / 20 + coste variable</p><p class="formula">Productividad = buenos esperados del plan / horas-persona del plan</p><h3>Supuestos</h3><p>f = 0,10 en referencia/A y 0,10 en B; 0,02 solo en la extensión C. El 80 % de reintentos se recupera. Cada ensayo ocupa D estándar + 60 s. No hay tercer intento. Inventario máximo: 300 entradas.</p></div>
+</div>
+<div class="note warning" style="margin-top:14px">Modelo de medias; no garantiza la entrega de cada turno. Los resultados no pronostican colas ni nivel de servicio garantizado. Para ello faltan distribuciones y secuencias temporales de llegadas/servicio, variabilidad por operación y reglas de cola.</div>
+</section>
+<section class="card span-12">
+<h2>09 · Pruebas de aceptación que debe validar el equipo</h2>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Entrada</th><th>Qué debe comprobarse</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Referencia 1</td><td>Referencia · 196 · 420 min · r=0,30 · mínimo 0,98</td><td>Capacidad, N, coste y factibilidad contra cálculo manual.</td><td><span class="status maybe">Pendiente de conciliación manual</span></td></tr>
+<tr><td>Referencia 2</td><td>A · 196 · 420 min · r=0,30 · mínimo 0,98</td><td>El cambio de B reduce únicamente la carga del puesto 1.</td><td><span class="status maybe">Pendiente de conciliación manual</span></td></tr>
+<tr><td>Referencia 3</td><td>B · 220 · 420 min · r=0,30 · mínimo 0,98</td><td>Redistribución de tareas y coste de la cuarta persona.</td><td><span class="status maybe">Pendiente de conciliación manual</span></td></tr>
+<tr><td>Frontera</td><td>Probar carga máxima = tiempo disponible por recurso</td><td>La capacidad entera debe incluir exactamente el caso de igualdad.</td><td><span class="status maybe">Por ejecutar</span></td></tr>
+<tr><td>Entrada inválida</td><td>r = 1,2 o minutos = 0</td><td>Mostrar error; no calcular con NaN ni convertir a cero.</td><td><span class="status maybe">Por ejecutar</span></td></tr>
+<tr><td>No factible</td><td>Demanda o mínimo que exceda capacidad/rendimiento</td><td>Marcar la alternativa como no factible y explicar la causa.</td><td><span class="status maybe">Por ejecutar</span></td></tr>
+</tbody></table></div>
+</section>
+<section class="card span-12"><h2>10 · Declaración de uso de IA</h2><p>Se utilizó IA como apoyo para estructurar la interfaz, implementar funciones deterministas, explicar fórmulas y proponer pruebas. El equipo debe revisar el código, realizar los cálculos manuales independientes, conciliar resultados y documentar qué sugerencias aceptó, modificó o descartó. La IA no sustituye la validación académica.</p></section>
+</div>
+<div class="footer">Datos sintéticos para aprendizaje · Caso 2 · Versión inicial de la herramienta</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>Number.isFinite(x)?x.toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const integer=x=>Number.isFinite(x)?Math.floor(x+1e-10):0;
+const times={A:34.5,B:96.6,C:131.1,D:34.5,E:46};
+function calculate(option,demand,minutes,r,minYield){
+ const f=0.10, good=1-0.2*f, changes=r+f, tests=1+f;
+ let a=times.A,b=times.B,c=times.C, people=3, invest=0,variable=0;
+ if(option==='A'){b=72*1.15;invest=250}
+ if(option==='B'){people=4;invest=200;variable=90}
+ const loads=option==='B'
+  ? {'Persona 1':b,'Persona 2':changes*c+good*times.E,'Persona 3':tests*(times.D+60),'Persona 4':times.A+good*times.E}
+  : {'Persona 1':a+b,'Persona 2':changes*c+good*times.E,'Persona 3':tests*(times.D+60)};
+ const maxLoad=Math.max(...Object.values(loads));
+ const capacity=integer(minutes*60/maxLoad);
+ const expectedAtCapacity=capacity*good;
+ const N=Math.ceil(demand/good-1e-12);
+ const feasible=N<=capacity && good>=minYield && N<=300;
+ const plannedGood=N*good;
+ const cost=invest/20+variable;
+ const productivity=feasible?plannedGood/(people*minutes/60):null;
+ return {option,f,good,changes,tests,loads,maxLoad,capacity,expectedAtCapacity,N,feasible,plannedGood,cost,productivity,people,invest,variable,a,b,c};
+}
+function render(){
+ const demand=Number($('demand').value),minutes=Number($('minutes').value),r=Number($('route').value),minYield=Number($('yieldMin').value),focus=$('focus').value;
+ const errors=[];
+ if(!Number.isInteger(demand)||demand<1||demand>300)errors.push('La demanda debe ser un entero entre 1 y 300.');
+ if(!Number.isFinite(minutes)||minutes<=0||minutes>480)errors.push('Los minutos netos deben ser mayores que 0 y no superar 480.');
+ if(!Number.isFinite(r)||r<0||r>1)errors.push('La proporción de ruta M debe estar entre 0 y 1.');
+ if(!Number.isFinite(minYield)||minYield<0||minYield>1)errors.push('El rendimiento mínimo debe estar entre 0 y 1.');
+ $('error').textContent=errors.join(' ');
+ if(errors.length){$('headline').innerHTML='';$('comparison').innerHTML='';$('tree').innerHTML='';$('loads').innerHTML='';return}
+ const rows=[['ref','Referencia'],['A','A · Organizador'],['B','B · Cuarta persona']].map(([id,label])=>({id,label,...calculate(id,demand,minutes,r,minYield)}));
+ const selected=rows.find(x=>x.id===focus);
+ const metrics=[
+ ['Rendimiento esperado',fmt(selected.good*100,1)+'%'],
+ ['Entradas requeridas N',selected.N+''],
+ ['Capacidad de entradas',selected.capacity+''],
+ ['Coste incremental/turno',fmt(selected.cost,2)+' €']
+ ];
+ $('headline').innerHTML=metrics.map(([k,v])=>'<div class="kpi"><small>'+k+'</small><strong>'+v+'</strong></div>').join('');
+ $('focusNote').innerHTML='<b>'+selected.label+'</b>: '+(selected.feasible?'<span class="status ok">Factible en el modelo</span>':'<span class="status no">No factible</span>')+' · '+(selected.feasible?'El plan requiere '+selected.N+' entradas y estima '+fmt(selected.plannedGood)+' mandos buenos.':'No cumple al menos una condición: capacidad, inventario o rendimiento mínimo.')+'<br><span class="muted">Carga limitante: '+fmt(selected.maxLoad)+' s/entrada. '+(selected.feasible?'Productividad del plan: '+fmt(selected.productivity)+' buenos esperados/hora-persona.':'No se calcula productividad como si el pedido se hubiera completado.')+'</span>';
+ $('comparison').innerHTML=rows.map(x=>'<tr style="'+(x.id===focus?'background:#1c3045':'')+'"><td><b>'+x.label+'</b></td><td>'+fmt(x.maxLoad)+' s/entrada</td><td>'+x.capacity+'</td><td>'+fmt(x.expectedAtCapacity)+'</td><td>'+x.N+'</td><td>'+(x.feasible?'<span class="status ok">Sí</span>':'<span class="status no">No</span>')+'</td><td>'+fmt(x.cost)+' €</td><td>'+(x.productivity===null?'—':fmt(x.productivity)+' buenos/h-p')+'</td></tr>').join('');
+ const firstFail=selected.f, recovered=0.8*firstFail, discarded=0.2*firstFail;
+ const vals=[['Entradas',1],['Ruta L',(1-r)],['Ruta M',r],['Fallo primera prueba',firstFail],['Reintento y segundo cambio',firstFail],['Recuperados del reintento',recovered],['Descartados tras segundo fallo',discarded],['Buenos esperados',selected.good]];
+ $('tree').innerHTML='<div class="table-wrap"><table><tbody>'+vals.map(([k,v])=>'<tr><td>'+k+'</td><td><b>'+fmt(v*100,1)+'%</b></td><td><div class="bar"><i style="width:'+Math.max(0,Math.min(100,v*100))+'%"></i></div></td></tr>').join('')+'</tbody></table></div><p class="hint">Los cambios iniciales son r por entrada; se suma un cambio adicional por cada fallo inicial.</p>';
+ $('loads').innerHTML=Object.entries(selected.loads).map(([k,v])=>'<div style="margin:12px 0"><div style="display:flex;justify-content:space-between"><b>'+k+'</b><span>'+fmt(v)+' s</span></div><div class="bar"><i style="width:'+Math.max(2,v/selected.maxLoad*100)+'%"></i></div></div>').join('')+'<p class="hint">El puesto limitante es '+Object.entries(selected.loads).sort((a,b)=>b[1]-a[1])[0][0]+'.';
+}
+function reset(){$('demand').value=196;$('minutes').value=420;$('route').value=.30;$('yieldMin').value=.98;$('focus').value='ref';render()}
+['calculate','demand','minutes','route','yieldMin','focus'].forEach(id=>$(id).addEventListener(id==='calculate'?'click':'change',render));
+$('reset').addEventListener('click',reset);
+const sample=[['Trabajo primera pasada',210],['Retrabajo',36],['Espera',39],['Traslado',15]];
+$('samplingKpis').innerHTML=sample.map(([k,v])=>'<div class="kpi"><small>'+k+'</small><strong>'+fmt(v/3,0)+'%</strong></div>').join('');
+const n=1.96**2*.13*(1-.13)/(.05**2);
+$('sampleN').innerHTML='Con p = 0,13, z = 1,96 y e = 0,05: n = '+fmt(n,2)+'; se requieren <b>'+Math.ceil(n)+' observaciones</b> como tamaño orientativo. El 12 % de retrabajo describe la proporción de instantes observados en ese estado, no la proporción de entradas que fallan: una unidad puede generar más de una observación.';
+render();
+</script>
+</body></html>
